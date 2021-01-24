@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FEDBD0"
-    tools:context=".view.HomeScreen">
+    tools:context=".view.StartScreen">
 
 
     <com.google.android.material.textfield.TextInputLayout
@@ -56,6 +56,7 @@
         app:rippleColor="#442C2E"
         app:strokeColor="#442C2E"
         app:strokeWidth="1dp" />
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

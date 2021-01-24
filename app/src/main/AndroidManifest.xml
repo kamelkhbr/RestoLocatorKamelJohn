@@ -31,15 +31,21 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name=".view.Location_Main_Activity"
-            android:label="@string/title_activity_location_"></activity>
-        <activity android:name=".view.HomeScreen" />
-        <activity android:name=".view.MainActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+            android:name=".view.MapsActivity"
+            android:label="@string/title_activity_maps">
+        </activity>
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+        <activity
+            android:name=".view.StartScreen" >
+        <intent-filter>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent-filter>
+
+        </activity>
+
+        <activity android:name=".view.MainActivity">
+
         </activity>
     </application>
 
