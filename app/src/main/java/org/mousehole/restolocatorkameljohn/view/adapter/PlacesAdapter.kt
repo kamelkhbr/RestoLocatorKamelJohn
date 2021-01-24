@@ -42,7 +42,9 @@ class PlacesAdapter(private var placesList: MutableList<PlacesResult>): Recycler
         holder.apply {
             businessName.text = placesItem.name
             businessStatus.text = placesItem.business_status
-            openingHours.text = placesItem.opening_hours.toString()
+            if(placesItem.opening_hours != null) {
+                openingHours.text = placesItem.opening_hours.toString()
+            }
             rating.text = placesItem.rating.toString()
 
         }
