@@ -10,6 +10,6 @@ import retrofit2.http.Query
 interface PlacesAPI {
 
     @GET(URL_PATH)
-    fun searchNearBy (@Query(SEARCH_QUERY) searchQuery: String): Observable<PlacesResponse>
+    fun getNearBy (): Observable<PlacesResponse>
 
 }

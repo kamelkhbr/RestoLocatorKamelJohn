@@ -29,5 +29,5 @@ class PlacesRetrofit {
         retorfit.create(PlacesAPI::class.java)
 
 
-    fun getNearBy(searchQuery: String): Observable<PlacesResponse> = placesAPI.searchNearBy(searchQuery)
+    fun getNearBy(): Observable<PlacesResponse> = placesAPI.getNearBy()
 }

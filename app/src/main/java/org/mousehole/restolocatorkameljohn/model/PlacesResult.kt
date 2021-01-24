@@ -17,4 +17,3 @@ data class PlacesResult(
     val user_ratings_total: Int,
     val vicinity: String
 )
-

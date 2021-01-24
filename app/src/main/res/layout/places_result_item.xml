@@ -34,7 +34,7 @@
             tools:text="Business Status" />
 
         <TextView
-            android:id="@+id/operation_hours"
+            android:id="@+id/open_now"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
@@ -42,7 +42,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/business_status"
-            tools:text="Operation Hours" />
+            tools:text="Open now?" />
 
         <TextView
             android:id="@+id/rating"
@@ -52,7 +52,7 @@
             android:layout_margin="16dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/operation_hours"
+            app:layout_constraintTop_toBottomOf="@id/open_now"
             tools:text="Rating" />
 
         <View
