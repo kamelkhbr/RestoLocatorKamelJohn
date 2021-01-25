@@ -6,12 +6,12 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import org.mousehole.restolocatorkameljohn.R
-import org.mousehole.restolocatorkameljohn.model.PlacesResult
+import org.mousehole.restolocatorkameljohn.model.data.LocationPlace
 import org.mousehole.restolocatorkameljohn.view.adapter.PlacesAdapter.*
 
-class PlacesAdapter(private var placesList: MutableList<PlacesResult>): RecyclerView.Adapter<PlacesViewHolder>() {
+class PlacesAdapter(private var placesList: List<LocationPlace>): RecyclerView.Adapter<PlacesViewHolder>() {
 
-    fun updatePlacesList (placesList: MutableList<PlacesResult>){
+    fun updatePlacesList (placesList: List<LocationPlace>){
         this.placesList = placesList
         notifyDataSetChanged()
     }
@@ -21,7 +21,7 @@ class PlacesAdapter(private var placesList: MutableList<PlacesResult>): Recycler
 
         val businessName : TextView = itemView.findViewById(R.id.business_name)
         val businessStatus : TextView = itemView.findViewById(R.id.business_status)
-        val openingHours : TextView = itemView.findViewById(R.id.open_now)
+        val openingHours : TextView = itemView.findViewById(R.id.operation_hours)
         val rating : TextView = itemView.findViewById(R.id.rating)
 
     }
@@ -41,9 +41,9 @@ class PlacesAdapter(private var placesList: MutableList<PlacesResult>): Recycler
 
         holder.apply {
             businessName.text = placesItem.name
-            businessStatus.text = placesItem.business_status
-            if(placesItem.opening_hours != null) {
-                openingHours.text = placesItem.opening_hours.toString()
+            businessStatus.text = placesItem.operationStatus
+            if(placesItem.operationStatus != null) {
+                openingHours.text = placesItem.hourStatus.toString()
             }
             rating.text = placesItem.rating.toString()
 
