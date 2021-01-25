@@ -32,7 +32,7 @@ class LocationRepository(application: Application) {
                 .map { it.results }
                 .subscribe({
                     placesLiveData.postValue(it)
-                    insertLocationDB(LocationPlace())
+
                     compositeDisposable.clear()
                 },{
                     Log.d(TAG, "getPlaceResults: $it")
@@ -42,7 +42,10 @@ class LocationRepository(application: Application) {
     }
 
     fun insertLocationDB(locationPlace: LocationPlace){
-        locDao?.insertLocation(locationPlace)
+        val thread = Thread {
+            locDao?.insertLocation(locationPlace)
+        }
+        thread.start()
     }
 
     fun deleteLocationDB(locationPlace: LocationPlace){
@@ -54,7 +57,11 @@ class LocationRepository(application: Application) {
     }
 
     fun clearLocationDB(){
-        locDao?.deleteAllLocations()
+        val thread = Thread {
+            locDao?.deleteAllLocations()
+        }
+        thread.start()
+
     }
 
     fun getAllLocationDB() = locDao?.getAllLocations()
