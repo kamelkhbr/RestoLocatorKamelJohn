@@ -1,38 +1,38 @@
 package org.mousehole.restolocatorkameljohn.viewmodel
 
-import android.util.Log
+import android.app.Application
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
-import org.mousehole.restolocatorkameljohn.model.PlacesResult
-import org.mousehole.restolocatorkameljohn.network.PlacesRetrofit
+import org.mousehole.restolocatorkameljohn.model.db.LocationPlace
+import org.mousehole.restolocatorkameljohn.model.data.PlacesResult
+import org.mousehole.restolocatorkameljohn.model.db.LocationRepository
 
-class PlacesViewModel: ViewModel() {
+class PlacesViewModel(application: Application) :ViewModel(){
 
-    private val compositeDisposable: CompositeDisposable = CompositeDisposable()
-    val placesLiveData: MutableLiveData<List<PlacesResult>> = MutableLiveData()
+    private val repository : LocationRepository = LocationRepository(application)
 
-    private val placesRetofit : PlacesRetrofit = PlacesRetrofit()
+    val locationLiveData: MutableLiveData<List<PlacesResult>> = repository.placesLiveData
 
-
-    fun getNearBy (){
-        compositeDisposable.add(
-            placesRetofit.getNearBy().observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .map {
-                    it.results
-                }
-                .subscribe ({
-                    if (it.isNotEmpty())
-                        placesLiveData.postValue(it)
-                    compositeDisposable.clear()
-                },{
-                    Log.d("TAG_X", "${it.localizedMessage}")
-                })
-
-        )
-
+    fun getPlaceResultSearchRetro(location: String, radius: String){
+        repository.getPlaceResults(location, radius)
     }
+
+    fun insertPlaceDB(location: LocationPlace){
+        repository.insertLocationDB(location)
+    }
+
+    fun deletePlaceDB(location: LocationPlace){
+        repository.deleteLocationDB(location)
+    }
+
+    fun updatePlaceDB(location: LocationPlace){
+        repository.updateLocationDB(location)
+    }
+
+    fun clearDB(){
+        repository.clearLocationDB()
+    }
+
+    fun getPlaceResultSearchDB() = repository.getAllLocationDB()
+
 }

@@ -9,9 +9,10 @@ import android.location.LocationManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.view.View
 import androidx.cardview.widget.CardView
 import androidx.core.app.ActivityCompat
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 
@@ -20,12 +21,12 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.tasks.Task
 import org.mousehole.restolocatorkameljohn.R
-import org.mousehole.restolocatorkameljohn.util.Constants
 import org.mousehole.restolocatorkameljohn.util.Constants.Companion.LOCATION_REQUEST_CODE
 import org.mousehole.restolocatorkameljohn.util.Constants.Companion.TAG
+import org.mousehole.restolocatorkameljohn.viewmodel.PlacesViewModel
+import kotlin.math.log
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
 
@@ -36,8 +37,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
     private  var currentLat: Double = 0.0
     private  var currentLong: Double = 0.0
 
-    private lateinit var currentLocaitonResetButton: CardView
+    private lateinit var currentLocationResetButton: CardView
 
+    private lateinit var placeViewModel: PlacesViewModel
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,8 +50,23 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
                 .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
-        currentLocaitonResetButton = findViewById(R.id.btn_reset_current)
-        currentLocaitonResetButton.setOnClickListener {
+        placeViewModel = ViewModelProvider(this,
+        ViewModelProvider.AndroidViewModelFactory.getInstance(this.application))
+            .get(PlacesViewModel::class.java)
+
+
+        placeViewModel.locationLiveData.observe(this, Observer {
+            if(it != null){
+                Log.d(TAG, "onCreate: ${it}")
+            } else {
+                Log.d(TAG, "onCreate: Failed.........")
+            }
+        })
+        placeViewModel.getPlaceResultSearchRetro("33.9091,-84.4791", "1500")
+
+
+        currentLocationResetButton = findViewById(R.id.btn_reset_current)
+        currentLocationResetButton.setOnClickListener {
             moveCameraLocation()
         }
     }
