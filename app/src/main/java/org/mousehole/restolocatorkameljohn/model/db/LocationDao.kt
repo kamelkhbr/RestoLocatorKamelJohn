@@ -3,6 +3,7 @@ package org.mousehole.restolocatorkameljohn.model.db
 import androidx.lifecycle.LiveData
 import androidx.room.*
 import org.mousehole.restolocatorkameljohn.model.data.Location
+import org.mousehole.restolocatorkameljohn.model.data.LocationPlace
 
 @Dao
 interface LocationDao {
@@ -20,7 +21,7 @@ interface LocationDao {
     fun deleteAllLocations()
 
     @Query("SELECT * FROM location_table")
-    fun getAllLocations(): LiveData<List<Location>>
+    fun getAllLocations(): LiveData<List<LocationPlace>>
 
 
 }

@@ -4,8 +4,9 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import org.mousehole.restolocatorkameljohn.model.data.LocationPlace
 
-@Database(version = 1, entities = arrayOf(LocationPlace::class))
+@Database(version = 2, entities = arrayOf(LocationPlace::class))
 abstract class LocationDatabase: RoomDatabase() {
 
     abstract fun locationDao(): LocationDao
