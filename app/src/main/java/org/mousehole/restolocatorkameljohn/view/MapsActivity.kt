@@ -2,45 +2,34 @@ package org.mousehole.restolocatorkameljohn.view
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.view.KeyEvent
-import android.view.Menu
-import android.view.View
-import android.widget.EditText
-import androidx.appcompat.widget.Toolbar
+import android.widget.Button
+import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.core.app.ActivityCompat
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
-
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.tasks.Task
-import com.google.android.material.appbar.AppBarLayout
-import com.google.android.material.button.MaterialButton
-import com.google.android.material.textfield.TextInputEditText
 import org.mousehole.restolocatorkameljohn.R
-import org.mousehole.restolocatorkameljohn.util.Constants
+import org.mousehole.restolocatorkameljohn.model.data.LocationPlace
 import org.mousehole.restolocatorkameljohn.util.Constants.Companion.LOCATION_REQUEST_CODE
 import org.mousehole.restolocatorkameljohn.util.Constants.Companion.TAG
+import org.mousehole.restolocatorkameljohn.viewmodel.PlacesViewModel
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
-
-
-
-    private lateinit var searchEditText: TextInputEditText
-
-
 
     private lateinit var locationManager: LocationManager
     private lateinit var mMap: GoogleMap
@@ -48,46 +37,70 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private  var currentLat: Double = 0.0
     private  var currentLong: Double = 0.0
+    private  var cameraLat = 0.0
+    private  var cameraLong = 0.0
 
-    private lateinit var currentLocaitonResetButton: CardView
+    private lateinit var currentLocationResetButton: CardView
 
+    private lateinit var placeViewModel: PlacesViewModel
+
+    private lateinit var searchButton: Button
+    
+    private var placeList: List<LocationPlace> = ArrayList()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_maps)
-
-
-        searchEditText = findViewById(R.id.search_cities)
-
-        searchEditText.setOnKeyListener(View.OnKeyListener { v, keyCode, event ->
-
-            if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP ){
-                // Get the location (city) text
-                searchEditText.text.toString()
-                // Find that location on the map
-                // Move the camera to that location
-                Log.d("TAG_K",searchEditText.text.toString() )
-
-                return@OnKeyListener true
-            }
-            false
-        })
-
-
-
-
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager
                 .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
-        currentLocaitonResetButton = findViewById(R.id.btn_reset_current)
-        currentLocaitonResetButton.setOnClickListener {
-            moveCameraLocation()
+
+        searchButton = findViewById(R.id.btn_search_area)
+
+        searchButton.setOnClickListener {
+            // Searches nearby places based on camera's location then Intents to new activity
+            Log.d(TAG, "onCreate: Postion -> ${mMap.cameraPosition}")
+
+            cameraLat = mMap.cameraPosition.target.latitude
+            cameraLong = mMap.cameraPosition.target.longitude
+
+
+            val intent: Intent = Intent(this, PlaceResultActivity::class.java).apply {
+                putExtra("lat", cameraLat)
+                putExtra("long", cameraLong)
+            }
+            startActivity(intent)
+
+
+        }
+
+        placeViewModel = ViewModelProvider(this,
+        ViewModelProvider.AndroidViewModelFactory.getInstance(this.application))
+            .get(PlacesViewModel::class.java)
+
+
+        placeViewModel.getPlaceResultSearchDB()?.observe(this , Observer { 
+            placeList = it
+        })
+
+        if(isNetworkConnected()){
+            Log.d(TAG, "--------------> INTERNET CONNECTED")
+            placeViewModel.getPlaceResultSearchRetro("33.9091,-84.4791", "1500")
+        } else {
+            Log.d(TAG, "--------------> INTERNET DISCONNECTED")
+        }
+
+
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
+        
+        currentLocationResetButton = findViewById(R.id.btn_reset_current)
+        currentLocationResetButton.setOnClickListener {
+           moveCameraLocation(LatLng(currentLat, currentLong))
         }
     }
-
 
 
     @SuppressLint("MissingPermission")
@@ -96,7 +109,14 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
 
         requestLocationPermission()
         registerLocationManager()
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
+
+
+
+    }
+
+    override fun onResume() {
+        super.onResume()
+        getCurrentLocation()
 
     }
 
@@ -133,8 +153,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
 
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
-
-        Log.d(TAG, "onMapReady: ")
     }
 
     override fun onLocationChanged(location: Location) {
@@ -144,19 +162,23 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
 
         Log.d(TAG, "onLocationChanged: getCurrentLocation $currentLat and $currentLong")
 
+        // Not where I want to put this. Find better spot
+        moveCameraLocation(LatLng(currentLat, currentLong))
 
-        moveCameraLocation()
+
+        //moveCameraLocation(LatLng())
     }
 
-    private fun moveCameraLocation() {
+    private fun moveCameraLocation(latLng: LatLng) {
         if (this::mMap.isInitialized) {
-            val currentLocation = LatLng(currentLat, currentLong)
 
-            Log.d(TAG, "onLocationChanged: Current Location -> ${currentLocation}")
+            Log.d(TAG, "onLocationChanged: Current Location -> ${latLng}")
             /*mMap.addMarker(MarkerOptions().position(currentLocation).title("My Current Location"))
             mMap.moveCamera(CameraUpdateFactory.newLatLng(currentLocation))*/
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 15f))
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15f))
 
+        } else{
+            Log.d(TAG, "moveCameraLocation: Not Initialized yet")
         }
     }
 
@@ -171,15 +193,20 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
     }
 
     @SuppressLint("MissingPermission")
-    private fun getCurrentLocation(){
-       val task: Task<Location> = fusedLocationProviderClient.lastLocation
+    private fun getCurrentLocation() {
+        val task: Task<Location> = fusedLocationProviderClient.lastLocation
 
-        //Getting current lat and current long
-        task.addOnSuccessListener{
-            if(it != null){
+        // Getting current lat and current long
+        task.addOnSuccessListener {
+            if (it != null) {
                 currentLat = it.latitude
                 currentLong = it.longitude
             }
         }
+    }
+
+    private fun isNetworkConnected(): Boolean {
+        val cm: ConnectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        return cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isConnected()
     }
 }

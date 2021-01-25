@@ -66,7 +66,6 @@
         map:boxCornerRadiusBottomEnd="16dp"
         map:boxCornerRadiusBottomStart="16dp"
         map:endIconMode="clear_text"
-        map:helperText="Search Cities"
         map:layout_constraintEnd_toEndOf="parent"
         map:layout_constraintStart_toStartOf="parent"
         map:layout_constraintTop_toTopOf="parent">
