@@ -1,11 +1,9 @@
 package org.mousehole.restolocatorkameljohn.view
 
-import android.content.ClipData
 import android.location.LocationListener
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
-import androidx.appcompat.widget.ButtonBarLayout
 import androidx.appcompat.widget.Toolbar
 import org.mousehole.restolocatorkameljohn.R
 
@@ -22,10 +20,6 @@ class MainActivity : AppCompatActivity() {
         // Creating the menu file for the main acitvity
         toolbar = findViewById(R.id.main_tool_bar)
         setSupportActionBar(toolbar)
-
-
-
-
     }
 
 
