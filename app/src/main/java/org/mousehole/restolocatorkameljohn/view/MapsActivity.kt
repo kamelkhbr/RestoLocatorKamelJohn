@@ -9,6 +9,8 @@ import android.location.LocationManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.widget.Button
+import android.widget.Toast
 import androidx.cardview.widget.CardView
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.Observer
@@ -20,6 +22,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.tasks.Task
 import org.mousehole.restolocatorkameljohn.R
@@ -36,10 +39,14 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private  var currentLat: Double = 0.0
     private  var currentLong: Double = 0.0
+    private  var cameraLat = 0.0
+    private  var cameraLong = 0.0
 
     private lateinit var currentLocationResetButton: CardView
 
     private lateinit var placeViewModel: PlacesViewModel
+
+    private lateinit var searchButton: Button
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,6 +56,14 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
         val mapFragment = supportFragmentManager
                 .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
+
+
+        searchButton = findViewById(R.id.btn_search_area)
+
+        searchButton.setOnClickListener {
+            // Searches nearby places based on camera's location then Intents to new activity
+            Toast.makeText(this, "Position: ${mMap.cameraPosition}", Toast.LENGTH_SHORT ).show()
+        }
 
         placeViewModel = ViewModelProvider(this,
         ViewModelProvider.AndroidViewModelFactory.getInstance(this.application))
@@ -62,12 +77,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
                 Log.d(TAG, "onCreate: Failed.........")
             }
         })
-        placeViewModel.getPlaceResultSearchRetro("33.9091,-84.4791", "1500")
+        //placeViewModel.getPlaceResultSearchRetro("33.9091,-84.4791", "1500")
 
-
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
+        
         currentLocationResetButton = findViewById(R.id.btn_reset_current)
         currentLocationResetButton.setOnClickListener {
-            moveCameraLocation()
+           moveCameraLocation(LatLng(currentLat, currentLong))
         }
     }
 
@@ -78,7 +94,14 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
 
         requestLocationPermission()
         registerLocationManager()
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
+
+
+
+    }
+
+    override fun onResume() {
+        super.onResume()
+        getCurrentLocation()
 
     }
 
@@ -115,8 +138,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
 
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
-
-        Log.d(TAG, "onMapReady: ")
     }
 
     override fun onLocationChanged(location: Location) {
@@ -126,19 +147,23 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
 
         Log.d(TAG, "onLocationChanged: getCurrentLocation $currentLat and $currentLong")
 
+        // Not where I want to put this. Find better spot
+        moveCameraLocation(LatLng(currentLat, currentLong))
 
-        moveCameraLocation()
+
+        //moveCameraLocation(LatLng())
     }
 
-    private fun moveCameraLocation() {
+    private fun moveCameraLocation(latLng: LatLng) {
         if (this::mMap.isInitialized) {
-            val currentLocation = LatLng(currentLat, currentLong)
 
-            Log.d(TAG, "onLocationChanged: Current Location -> ${currentLocation}")
+            Log.d(TAG, "onLocationChanged: Current Location -> ${latLng}")
             /*mMap.addMarker(MarkerOptions().position(currentLocation).title("My Current Location"))
             mMap.moveCamera(CameraUpdateFactory.newLatLng(currentLocation))*/
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 15f))
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15f))
 
+        } else{
+            Log.d(TAG, "moveCameraLocation: Not Initialized yet")
         }
     }
 
