@@ -28,5 +28,9 @@ class Constants {
 
         // Other parameters for querys -> https://developers.google.com/places/web-service/search
 
+
+        // Geocode
+        //https://maps.googleapis.com/maps/api/geocode/json?address=stonemountainatlanta&key=AIzaSyDh8h-16Q-uDkppVJsfPFjqS-U2OxSyfi8
+
     }
 }
