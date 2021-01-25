@@ -9,7 +9,11 @@ import android.location.LocationManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.KeyEvent
+import android.view.Menu
 import android.view.View
+import android.widget.EditText
+import androidx.appcompat.widget.Toolbar
 import androidx.cardview.widget.CardView
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -22,12 +26,21 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.tasks.Task
+import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.textfield.TextInputEditText
 import org.mousehole.restolocatorkameljohn.R
 import org.mousehole.restolocatorkameljohn.util.Constants
 import org.mousehole.restolocatorkameljohn.util.Constants.Companion.LOCATION_REQUEST_CODE
 import org.mousehole.restolocatorkameljohn.util.Constants.Companion.TAG
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
+
+
+
+    private lateinit var searchEditText: TextInputEditText
+
+
 
     private lateinit var locationManager: LocationManager
     private lateinit var mMap: GoogleMap
@@ -43,6 +56,27 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_maps)
+
+
+        searchEditText = findViewById(R.id.search_cities)
+
+        searchEditText.setOnKeyListener(View.OnKeyListener { v, keyCode, event ->
+
+            if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP ){
+                // Get the location (city) text
+                searchEditText.text.toString()
+                // Find that location on the map
+                // Move the camera to that location
+                Log.d("TAG_K",searchEditText.text.toString() )
+
+                return@OnKeyListener true
+            }
+            false
+        })
+
+
+
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager
                 .findFragmentById(R.id.map) as SupportMapFragment
@@ -53,6 +87,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
             moveCameraLocation()
         }
     }
+
 
 
     @SuppressLint("MissingPermission")
@@ -137,9 +172,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
 
     @SuppressLint("MissingPermission")
     private fun getCurrentLocation(){
-        val task: Task<Location> = fusedLocationProviderClient.lastLocation
+       val task: Task<Location> = fusedLocationProviderClient.lastLocation
 
-        // Getting current lat and current long
+        //Getting current lat and current long
         task.addOnSuccessListener{
             if(it != null){
                 currentLat = it.latitude
