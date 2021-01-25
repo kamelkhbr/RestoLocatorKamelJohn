@@ -7,20 +7,24 @@ import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Parcelable
 import android.util.Log
 import android.widget.Button
-import androidx.appcompat.app.AppCompatActivity
+import android.widget.Toast
 import androidx.cardview.widget.CardView
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.tasks.Task
 import org.mousehole.restolocatorkameljohn.R
@@ -28,6 +32,7 @@ import org.mousehole.restolocatorkameljohn.model.data.LocationPlace
 import org.mousehole.restolocatorkameljohn.util.Constants.Companion.LOCATION_REQUEST_CODE
 import org.mousehole.restolocatorkameljohn.util.Constants.Companion.TAG
 import org.mousehole.restolocatorkameljohn.viewmodel.PlacesViewModel
+import kotlin.math.log
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
 
@@ -85,13 +90,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
         placeViewModel.getPlaceResultSearchDB()?.observe(this , Observer { 
             placeList = it
         })
+        placeViewModel.getPlaceResultSearchRetro("33.9091,-84.4791", "1500")
 
-        if(isNetworkConnected()){
-            Log.d(TAG, "--------------> INTERNET CONNECTED")
-            placeViewModel.getPlaceResultSearchRetro("33.9091,-84.4791", "1500")
-        } else {
-            Log.d(TAG, "--------------> INTERNET DISCONNECTED")
-        }
 
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
@@ -193,20 +193,15 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
     }
 
     @SuppressLint("MissingPermission")
-    private fun getCurrentLocation() {
+    private fun getCurrentLocation(){
         val task: Task<Location> = fusedLocationProviderClient.lastLocation
 
         // Getting current lat and current long
-        task.addOnSuccessListener {
-            if (it != null) {
+        task.addOnSuccessListener{
+            if(it != null){
                 currentLat = it.latitude
                 currentLong = it.longitude
             }
         }
-    }
-
-    private fun isNetworkConnected(): Boolean {
-        val cm: ConnectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        return cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isConnected()
     }
 }
