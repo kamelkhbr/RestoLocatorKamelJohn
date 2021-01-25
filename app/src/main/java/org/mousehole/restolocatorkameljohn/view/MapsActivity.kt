@@ -2,17 +2,13 @@ package org.mousehole.restolocatorkameljohn.view
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Parcelable
 import android.util.Log
-import android.widget.Button
-import android.widget.Toast
 import androidx.cardview.widget.CardView
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.Observer
@@ -24,11 +20,9 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.tasks.Task
 import org.mousehole.restolocatorkameljohn.R
-import org.mousehole.restolocatorkameljohn.model.data.LocationPlace
 import org.mousehole.restolocatorkameljohn.util.Constants.Companion.LOCATION_REQUEST_CODE
 import org.mousehole.restolocatorkameljohn.util.Constants.Companion.TAG
 import org.mousehole.restolocatorkameljohn.viewmodel.PlacesViewModel
@@ -42,16 +36,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private  var currentLat: Double = 0.0
     private  var currentLong: Double = 0.0
-    private  var cameraLat = 0.0
-    private  var cameraLong = 0.0
 
     private lateinit var currentLocationResetButton: CardView
 
     private lateinit var placeViewModel: PlacesViewModel
-
-    private lateinit var searchButton: Button
-    
-    private var placeList: List<LocationPlace> = ArrayList()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -62,43 +50,24 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
                 .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
-
-        searchButton = findViewById(R.id.btn_search_area)
-
-        searchButton.setOnClickListener {
-            // Searches nearby places based on camera's location then Intents to new activity
-            Log.d(TAG, "onCreate: Postion -> ${mMap.cameraPosition}")
-
-            cameraLat = mMap.cameraPosition.target.latitude
-            cameraLong = mMap.cameraPosition.target.longitude
-
-
-            val intent: Intent = Intent(this, PlaceResultActivity::class.java).apply {
-                putExtra("lat", cameraLat)
-                putExtra("long", cameraLong)
-            }
-            startActivity(intent)
-
-
-        }
-
         placeViewModel = ViewModelProvider(this,
         ViewModelProvider.AndroidViewModelFactory.getInstance(this.application))
             .get(PlacesViewModel::class.java)
 
 
-        placeViewModel.getPlaceResultSearchDB()?.observe(this , Observer { 
-            placeList = it
+        placeViewModel.locationLiveData.observe(this, Observer {
+            if(it != null){
+                Log.d(TAG, "onCreate: ${it}")
+            } else {
+                Log.d(TAG, "onCreate: Failed.........")
+            }
         })
         placeViewModel.getPlaceResultSearchRetro("33.9091,-84.4791", "1500")
 
 
-
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
-        
         currentLocationResetButton = findViewById(R.id.btn_reset_current)
         currentLocationResetButton.setOnClickListener {
-           moveCameraLocation(LatLng(currentLat, currentLong))
+            moveCameraLocation()
         }
     }
 
@@ -109,14 +78,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
 
         requestLocationPermission()
         registerLocationManager()
-
-
-
-    }
-
-    override fun onResume() {
-        super.onResume()
-        getCurrentLocation()
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
 
     }
 
@@ -153,6 +115,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
 
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
+
+        Log.d(TAG, "onMapReady: ")
     }
 
     override fun onLocationChanged(location: Location) {
@@ -162,23 +126,19 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
 
         Log.d(TAG, "onLocationChanged: getCurrentLocation $currentLat and $currentLong")
 
-        // Not where I want to put this. Find better spot
-        moveCameraLocation(LatLng(currentLat, currentLong))
 
-
-        //moveCameraLocation(LatLng())
+        moveCameraLocation()
     }
 
-    private fun moveCameraLocation(latLng: LatLng) {
+    private fun moveCameraLocation() {
         if (this::mMap.isInitialized) {
+            val currentLocation = LatLng(currentLat, currentLong)
 
-            Log.d(TAG, "onLocationChanged: Current Location -> ${latLng}")
+            Log.d(TAG, "onLocationChanged: Current Location -> ${currentLocation}")
             /*mMap.addMarker(MarkerOptions().position(currentLocation).title("My Current Location"))
             mMap.moveCamera(CameraUpdateFactory.newLatLng(currentLocation))*/
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15f))
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 15f))
 
-        } else{
-            Log.d(TAG, "moveCameraLocation: Not Initialized yet")
         }
     }
 
