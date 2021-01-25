@@ -1,7 +1,5 @@
 package org.mousehole.restolocatorkameljohn.model.data
 
-import org.mousehole.restolocatorkameljohn.model.db.LocationPlace
-
 data class PlacesResponse(
     val html_attributions: List<Any>,
     val next_page_token: String,
@@ -21,8 +19,8 @@ data class Viewport(
 )
 
 data class Geometry(
-    val locationPlace: LocationPlace,
-    val viewport: Viewport
+        val location: Location,
+        val viewport: Viewport
 )
 
 data class Location(

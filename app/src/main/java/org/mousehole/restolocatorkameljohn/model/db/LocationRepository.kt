@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
+import org.mousehole.restolocatorkameljohn.model.data.LocationPlace
 import org.mousehole.restolocatorkameljohn.model.data.PlacesResult
 import org.mousehole.restolocatorkameljohn.network.PlacesRetrofit
 import org.mousehole.restolocatorkameljohn.util.Constants.Companion.TAG
@@ -31,11 +32,13 @@ class LocationRepository(application: Application) {
                 .map { it.results }
                 .subscribe({
                     placesLiveData.postValue(it)
+                    insertLocationDB(LocationPlace())
                     compositeDisposable.clear()
                 },{
                     Log.d(TAG, "getPlaceResults: $it")
                 })
         )
+
     }
 
     fun insertLocationDB(locationPlace: LocationPlace){

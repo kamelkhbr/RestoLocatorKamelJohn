@@ -1,13 +1,13 @@
 package org.mousehole.restolocatorkameljohn.viewmodel
 
 import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import org.mousehole.restolocatorkameljohn.model.db.LocationPlace
+import org.mousehole.restolocatorkameljohn.model.data.LocationPlace
 import org.mousehole.restolocatorkameljohn.model.data.PlacesResult
 import org.mousehole.restolocatorkameljohn.model.db.LocationRepository
 
-class PlacesViewModel(application: Application) :ViewModel(){
+class PlacesViewModel(application: Application) : AndroidViewModel(application){
 
     private val repository : LocationRepository = LocationRepository(application)
 
