@@ -22,6 +22,7 @@
         app:counterEnabled="true"
         app:counterMaxLength="5"
         app:endIconMode="clear_text"
+        app:suffixText="ft"
         app:helperText="Enter the search radius here"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

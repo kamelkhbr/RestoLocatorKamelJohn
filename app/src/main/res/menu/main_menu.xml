@@ -3,10 +3,9 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/app_bar_search"
-        android:icon="@drawable/ic_search_black_24dp"
+        android:icon="@drawable/ic_baseline_search_24"
         android:title="Search"
         app:actionViewClass="android.widget.SearchView"
         app:showAsAction="always" />
-    <item android:title="Help" />
-    <item android:title="Close App" />
+    <item android:title="Settings" />
 </menu>

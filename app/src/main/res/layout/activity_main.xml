@@ -11,7 +11,7 @@
         android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:backgroundTint="#442C2E"
+        android:backgroundTint="@color/white"
         android:theme="@style/Widget.AppCompat.ActionBar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -21,8 +21,9 @@
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/main_tool_bar"
             android:layout_width="match_parent"
+            app:title="search..."
             android:layout_height="?attr/actionBarSize"
-            app:titleTextColor="@color/white" />
+            app:titleTextColor="@color/black" />
 
 
     </com.google.android.material.appbar.AppBarLayout>

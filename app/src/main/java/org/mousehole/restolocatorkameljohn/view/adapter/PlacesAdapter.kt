@@ -6,12 +6,12 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import org.mousehole.restolocatorkameljohn.R
-import org.mousehole.restolocatorkameljohn.model.data.LocationPlace
+import org.mousehole.restolocatorkameljohn.model.PlacesResult
 import org.mousehole.restolocatorkameljohn.view.adapter.PlacesAdapter.*
 
-class PlacesAdapter(private var placesList: List<LocationPlace>): RecyclerView.Adapter<PlacesViewHolder>() {
+class PlacesAdapter(private var placesList: MutableList<PlacesResult>): RecyclerView.Adapter<PlacesViewHolder>() {
 
-    fun updatePlacesList (placesList: List<LocationPlace>){
+    fun updatePlacesList (placesList: MutableList<PlacesResult>){
         this.placesList = placesList
         notifyDataSetChanged()
     }
@@ -41,9 +41,9 @@ class PlacesAdapter(private var placesList: List<LocationPlace>): RecyclerView.A
 
         holder.apply {
             businessName.text = placesItem.name
-            businessStatus.text = placesItem.operationStatus
-            if(placesItem.operationStatus != null) {
-                openingHours.text = placesItem.hourStatus.toString()
+            businessStatus.text = placesItem.business_status
+            if(placesItem.opening_hours != null) {
+                openingHours.text = placesItem.opening_hours.toString()
             }
             rating.text = placesItem.rating.toString()
 
