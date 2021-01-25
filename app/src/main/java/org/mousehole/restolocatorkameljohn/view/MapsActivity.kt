@@ -50,7 +50,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
     private lateinit var placeViewModel: PlacesViewModel
 
     private lateinit var searchButton: Button
-    
+
     private var placeList: List<LocationPlace> = ArrayList()
 
 
@@ -63,7 +63,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
         mapFragment.getMapAsync(this)
 
 
-        searchButton = findViewById(R.id.btn_search_area)
+        //searchButton = findViewById(R.id.btn_search_area)
 
         searchButton.setOnClickListener {
             // Searches nearby places based on camera's location then Intents to new activity
@@ -87,15 +87,15 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
             .get(PlacesViewModel::class.java)
 
 
-        placeViewModel.getPlaceResultSearchDB()?.observe(this , Observer { 
-            placeList = it
+        placeViewModel.getPlaceResultSearchDB()?.observe(this , Observer {
+            //placeList =
         })
         placeViewModel.getPlaceResultSearchRetro("33.9091,-84.4791", "1500")
 
 
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
-        
+
         currentLocationResetButton = findViewById(R.id.btn_reset_current)
         currentLocationResetButton.setOnClickListener {
            moveCameraLocation(LatLng(currentLat, currentLong))

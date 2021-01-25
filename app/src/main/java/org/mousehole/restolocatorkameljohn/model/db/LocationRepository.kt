@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
+import org.mousehole.restolocatorkameljohn.model.data.LocationPlace
 import org.mousehole.restolocatorkameljohn.model.data.PlacesResult
 import org.mousehole.restolocatorkameljohn.network.PlacesRetrofit
 import org.mousehole.restolocatorkameljohn.util.Constants.Companion.TAG
