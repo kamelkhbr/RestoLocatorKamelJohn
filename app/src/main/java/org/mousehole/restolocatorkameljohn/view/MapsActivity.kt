@@ -2,12 +2,14 @@ package org.mousehole.restolocatorkameljohn.view
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Parcelable
 import android.util.Log
 import android.widget.Button
 import android.widget.Toast
@@ -26,6 +28,7 @@ import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.tasks.Task
 import org.mousehole.restolocatorkameljohn.R
+import org.mousehole.restolocatorkameljohn.model.data.LocationPlace
 import org.mousehole.restolocatorkameljohn.util.Constants.Companion.LOCATION_REQUEST_CODE
 import org.mousehole.restolocatorkameljohn.util.Constants.Companion.TAG
 import org.mousehole.restolocatorkameljohn.viewmodel.PlacesViewModel
@@ -47,6 +50,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
     private lateinit var placeViewModel: PlacesViewModel
 
     private lateinit var searchButton: Button
+    
+    private var placeList: List<LocationPlace> = ArrayList()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -62,7 +67,19 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
 
         searchButton.setOnClickListener {
             // Searches nearby places based on camera's location then Intents to new activity
-            Toast.makeText(this, "Position: ${mMap.cameraPosition}", Toast.LENGTH_SHORT ).show()
+            Log.d(TAG, "onCreate: Postion -> ${mMap.cameraPosition}")
+
+            cameraLat = mMap.cameraPosition.target.latitude
+            cameraLong = mMap.cameraPosition.target.longitude
+
+
+            val intent: Intent = Intent(this, PlaceResultActivity::class.java).apply {
+                putExtra("lat", cameraLat)
+                putExtra("long", cameraLong)
+            }
+            startActivity(intent)
+
+
         }
 
         placeViewModel = ViewModelProvider(this,
@@ -70,14 +87,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
             .get(PlacesViewModel::class.java)
 
 
-        placeViewModel.locationLiveData.observe(this, Observer {
-            if(it != null){
-                Log.d(TAG, "onCreate: ${it}")
-            } else {
-                Log.d(TAG, "onCreate: Failed.........")
-            }
+        placeViewModel.getPlaceResultSearchDB()?.observe(this , Observer { 
+            placeList = it
         })
-        //placeViewModel.getPlaceResultSearchRetro("33.9091,-84.4791", "1500")
+        placeViewModel.getPlaceResultSearchRetro("33.9091,-84.4791", "1500")
+
+
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
         
