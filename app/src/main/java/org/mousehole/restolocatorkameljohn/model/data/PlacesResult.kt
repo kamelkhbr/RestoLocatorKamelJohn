@@ -1,4 +1,4 @@
-package org.mousehole.restolocatorkameljohn.model
+package org.mousehole.restolocatorkameljohn.model.data
 
 data class PlacesResult(
     val business_status: String,

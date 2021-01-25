@@ -8,8 +8,9 @@ class Constants {
 
         const val BASE_URL = "https://maps.googleapis.com/"
         const val URL_PATH= "/maps/api/place/nearbysearch/json"
-        const val SEARCH_QUERY= "location"
-        const val SEARCH_RADIUS= "radius"
+        const val LOCATION= "location"
+        const val RADIUS= "radius"
+        const val KEY = "key"
         const val MY_API_KEY = "AIzaSyDh8h-16Q-uDkppVJsfPFjqS-U2OxSyfi8"
 
         const val LOCATION_REQUEST_CODE = 707

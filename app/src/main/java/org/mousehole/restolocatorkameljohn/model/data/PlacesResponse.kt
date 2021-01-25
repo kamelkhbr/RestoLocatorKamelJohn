@@ -1,4 +1,6 @@
-package org.mousehole.restolocatorkameljohn.model
+package org.mousehole.restolocatorkameljohn.model.data
+
+import org.mousehole.restolocatorkameljohn.model.db.LocationPlace
 
 data class PlacesResponse(
     val html_attributions: List<Any>,
@@ -19,7 +21,7 @@ data class Viewport(
 )
 
 data class Geometry(
-    val location: Location,
+    val locationPlace: LocationPlace,
     val viewport: Viewport
 )
 

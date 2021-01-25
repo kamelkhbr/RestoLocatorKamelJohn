@@ -1,9 +1,10 @@
 package org.mousehole.restolocatorkameljohn.network
 
-import android.app.DownloadManager
 import io.reactivex.Observable
-import org.mousehole.restolocatorkameljohn.model.PlacesResponse
+import org.mousehole.restolocatorkameljohn.model.data.PlacesResponse
+import org.mousehole.restolocatorkameljohn.model.data.PlacesResult
 import org.mousehole.restolocatorkameljohn.util.Constants.Companion.BASE_URL
+import org.mousehole.restolocatorkameljohn.util.Constants.Companion.MY_API_KEY
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
@@ -29,5 +30,6 @@ class PlacesRetrofit {
         retorfit.create(PlacesAPI::class.java)
 
 
-    fun getNearBy(searchQuery: String): Observable<PlacesResponse> = placesAPI.searchNearBy(searchQuery)
+    fun getNearBy(location: String, radius: String): Observable<PlacesResponse> =
+        placesAPI.searchNearBy(location, radius, MY_API_KEY)
 }
