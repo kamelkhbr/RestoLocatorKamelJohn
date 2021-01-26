@@ -2,38 +2,37 @@ package org.mousehole.restolocatorkameljohn.view
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.net.ConnectivityManager
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Parcelable
 import android.util.Log
-import android.widget.Button
-import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
-
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.Circle
+import com.google.android.gms.maps.model.CircleOptions
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.tasks.Task
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.textfield.TextInputEditText
 import org.mousehole.restolocatorkameljohn.R
 import org.mousehole.restolocatorkameljohn.model.data.LocationPlace
 import org.mousehole.restolocatorkameljohn.util.Constants.Companion.LOCATION_REQUEST_CODE
 import org.mousehole.restolocatorkameljohn.util.Constants.Companion.TAG
 import org.mousehole.restolocatorkameljohn.viewmodel.PlacesViewModel
-import kotlin.math.log
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
 
@@ -50,7 +49,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
 
     private lateinit var placeViewModel: PlacesViewModel
 
-    private lateinit var searchButton: Button
+    private lateinit var btnSearchArea: MaterialButton
+    private lateinit var etSearchLocation: TextInputEditText
 
     private var placeList: List<LocationPlace> = ArrayList()
 
@@ -69,6 +69,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
         ViewModelProvider.AndroidViewModelFactory.getInstance(this.application))
             .get(PlacesViewModel::class.java)
 
+        btnSearchArea = findViewById(R.id.btn_search_area)
+        etSearchLocation = findViewById(R.id.et_search_bar)
+
+
+
 
         placeViewModel.getPlaceResultSearchDB()?.observe(this , Observer {
             placeList = it
@@ -83,11 +88,16 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
 
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
+        getCurrentLocation()
+
+
 
         currentLocationResetButton = findViewById(R.id.btn_reset_current)
         currentLocationResetButton.setOnClickListener {
             moveCameraLocation(LatLng(currentLat, currentLong))
         }
+
+
     }
 
 
@@ -99,12 +109,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
         registerLocationManager()
 
 
-
     }
 
     override fun onResume() {
         super.onResume()
-        getCurrentLocation()
+
+
 
     }
 
@@ -141,6 +151,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
 
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
+
+
     }
 
     override fun onLocationChanged(location: Location) {
@@ -159,14 +171,22 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
         if (this::mMap.isInitialized) {
             val currentLocation = LatLng(currentLat, currentLong)
 
+            mMap.addCircle(CircleOptions()
+                    .center(LatLng(currentLat, currentLong))
+                    .radius(40.0)
+                    .strokeColor(Color.parseColor("#168CCC"))
+                    .fillColor(Color.BLUE))
+
             Log.d(TAG, "onLocationChanged: Current Location -> ${latLng}")
             /*mMap.addMarker(MarkerOptions().position(currentLocation).title("My Current Location"))
             mMap.moveCamera(CameraUpdateFactory.newLatLng(currentLocation))*/
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15f))
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 15f))
 
         } else{
             Log.d(TAG, "moveCameraLocation: Not Initialized yet")
         }
+
+
     }
 
     private fun requestLocationPermission() {
@@ -182,6 +202,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
     @SuppressLint("MissingPermission")
     private fun getCurrentLocation(){
         val task: Task<Location> = fusedLocationProviderClient.lastLocation
+
+        moveCameraLocation(LatLng(currentLat, currentLong))
 
         // Getting current lat and current long
         task.addOnSuccessListener{
