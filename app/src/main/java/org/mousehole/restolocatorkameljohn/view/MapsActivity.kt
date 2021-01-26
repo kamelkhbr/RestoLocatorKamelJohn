@@ -7,6 +7,7 @@ import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
+import android.net.ConnectivityManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Parcelable
@@ -72,7 +73,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
         placeViewModel.getPlaceResultSearchDB()?.observe(this , Observer {
             placeList = it
         })
-        placeViewModel.getPlaceResultSearchRetro("33.9091,-84.4791", "1500")
+        if(isNetworkConnected()){
+            Log.d(TAG, "--------------> INTERNET CONNECTED")
+            placeViewModel.getPlaceResultSearchRetro("$cameraLat,$cameraLong", "1500")
+        } else {
+            Log.d(TAG, "--------------> INTERNET DISCONNECTED")
+        }
 
 
 
@@ -80,7 +86,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
 
         currentLocationResetButton = findViewById(R.id.btn_reset_current)
         currentLocationResetButton.setOnClickListener {
-            moveCameraLocation()
+            moveCameraLocation(LatLng(currentLat, currentLong))
         }
     }
 
@@ -185,4 +191,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
             }
         }
     }
+
+    @Suppress("DEPRECATION")
+    private fun isNetworkConnected(): Boolean {
+        val cm: ConnectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        return cm.activeNetworkInfo != null && cm.activeNetworkInfo!!.isConnected
+    }
+
 }
