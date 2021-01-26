@@ -31,23 +31,47 @@
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:layout_editor_absoluteX="-100dp"
-        tools:layout_editor_absoluteY="-100dp" />
-
-    <EditText
-        android:id="@+id/editTextTextPersonName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:text="Name"
+        android:layout_marginBottom="6dp"
+        map:layout_constraintBottom_toBottomOf="parent"
         map:layout_constraintEnd_toEndOf="parent"
         map:layout_constraintStart_toStartOf="parent"
-        map:layout_constraintTop_toTopOf="parent" />
+        map:layout_constraintTop_toBottomOf="@+id/appBarLayout" />
 
-    <Button
-        android:id="@+id/btn_search_area"
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/search_location_btn"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
         android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:text="Search Locations"
+        android:textColor="#442C2E"
+        map:icon="@drawable/ic_search_24"
+        map:layout_constraintEnd_toEndOf="parent"
+        map:layout_constraintStart_toStartOf="parent"
+        map:layout_constraintTop_toBottomOf="@+id/serachInputLayout"
+        map:rippleColor="#442C2E"
+        map:strokeColor="@color/white"
+        map:strokeWidth="1dp" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/serachInputLayout"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Search..."
+        map:boxBackgroundColor="@color/white"
+        map:boxCornerRadiusTopEnd="16dp"
+        map:boxCornerRadiusTopStart="16dp"
+        map:boxCornerRadiusBottomEnd="16dp"
+        map:boxCornerRadiusBottomStart="16dp"
+        map:endIconMode="clear_text"
+        map:layout_constraintEnd_toEndOf="parent"
+        map:layout_constraintStart_toStartOf="parent"
+        map:layout_constraintTop_toTopOf="parent">
+
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/search_cities"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Button"
         map:layout_constraintBottom_toBottomOf="@+id/map"

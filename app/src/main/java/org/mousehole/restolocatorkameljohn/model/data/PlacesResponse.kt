@@ -19,8 +19,8 @@ data class Viewport(
 )
 
 data class Geometry(
-    val locationPlace: LocationPlace,
-    val viewport: Viewport
+        val location: Location,
+        val viewport: Viewport
 )
 
 data class Location(

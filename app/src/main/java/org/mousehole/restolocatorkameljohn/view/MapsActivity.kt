@@ -63,24 +63,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
         mapFragment.getMapAsync(this)
 
 
-        searchButton = findViewById(R.id.btn_search_area)
-
-        searchButton.setOnClickListener {
-            // Searches nearby places based on camera's location then Intents to new activity
-            Log.d(TAG, "onCreate: Postion -> ${mMap.cameraPosition}")
-
-            cameraLat = mMap.cameraPosition.target.latitude
-            cameraLong = mMap.cameraPosition.target.longitude
-
-
-            val intent: Intent = Intent(this, PlaceResultActivity::class.java).apply {
-                putExtra("lat", cameraLat)
-                putExtra("long", cameraLong)
-            }
-            startActivity(intent)
-
-
-        }
 
         placeViewModel = ViewModelProvider(this,
         ViewModelProvider.AndroidViewModelFactory.getInstance(this.application))
@@ -98,7 +80,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
 
         currentLocationResetButton = findViewById(R.id.btn_reset_current)
         currentLocationResetButton.setOnClickListener {
-           moveCameraLocation(LatLng(currentLat, currentLong))
+            moveCameraLocation()
         }
     }
 
@@ -162,8 +144,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
 
         Log.d(TAG, "onLocationChanged: getCurrentLocation $currentLat and $currentLong")
 
-        // Not where I want to put this. Find better spot
-        moveCameraLocation(LatLng(currentLat, currentLong))
 
 
         //moveCameraLocation(LatLng())
@@ -171,6 +151,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener {
 
     private fun moveCameraLocation(latLng: LatLng) {
         if (this::mMap.isInitialized) {
+            val currentLocation = LatLng(currentLat, currentLong)
 
             Log.d(TAG, "onLocationChanged: Current Location -> ${latLng}")
             /*mMap.addMarker(MarkerOptions().position(currentLocation).title("My Current Location"))
